@@ -1,5 +1,5 @@
-// RUN: heir-opt --convert-elementwise-to-affine %s | FileCheck --enable-var-scope %s
-
+// RUN: heir-opt --convert-elementwise-to-affine=ops-to-consider="polynomial.add,polynomial.mul_scalar" %s | FileCheck --enable-var-scope %s
+// RUN: heir-opt --convert-elementwise-to-affine=dialects-to-consider="polynomial" %s | FileCheck --enable-var-scope %s
 !poly = !polynomial.polynomial<ring=<coefficientType = i32, coefficientModulus = 33538049 : i32, polynomialModulus=#polynomial.int_polynomial<1 + x**1024>>>
 
 // CHECK-LABEL:  @test_elementwise

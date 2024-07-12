@@ -13,6 +13,12 @@ def ElementwiseToAffine : Pass<"convert-elementwise-to-affine"> {
     "mlir::affine::AffineDialect",
     "mlir::tensor::TensorDialect"
   ];
+  let options = [
+    ListOption<"dialectsToConsider","dialects-to-consider", "std::string",
+                "comma-separated list of dialects to run this pass on ">,
+    ListOption<"opsToConsider","ops-to-consider", "std::string",
+                "comma-separated list of ops to run this pass on ">
+  ];
 }
 
 #endif  // LIB_TRANSFORMS_ELEMENTWISETOAFFINE_ELEMENTWISETOAFFINE_TD_

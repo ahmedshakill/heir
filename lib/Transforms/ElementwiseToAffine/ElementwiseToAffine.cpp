@@ -130,10 +130,22 @@ struct ElementwiseToAffine
     RewritePatternSet patterns(context);
 
     patterns.add<ConvertAnyElementwiseMappableOpOnRankedTensors>(context);
-    target.markUnknownOpDynamicallyLegal([](Operation *op) {
+    target.markUnknownOpDynamicallyLegal([&](Operation *op) {
       // TODO (#768): to make this pass more widely applicable, it should take
       // a dialect and/or list of operations to restrict the conversion to
-      return !isElementwiseMappableOpOnRankedTensors(op);
+      auto dialect = op->getDialect()->getNamespace().str();
+      bool isDialectInList = dialectsToConsider.size()>=0 ? false : true ;
+      for(auto &str: dialectsToConsider){
+        if(str==dialect)
+          isDialectInList =true;
+      }
+      auto opStr = op->getName().getStringRef().str();
+      bool isOpInList = opsToConsider.size()>=0 ? false : true ;
+      for(auto &str : opsToConsider){
+        if(str == opStr)
+          isOpInList = true;
+      }
+      return ! ((isOpInList || isDialectInList) && isElementwiseMappableOpOnRankedTensors(op));
     });
 
     if (failed(applyPartialConversion(getOperation(), target,
@@ -144,3 +156,19 @@ struct ElementwiseToAffine
 
 }  // namespace heir
 }  // namespace mlir
+
+/*
+auto dialect = op->getDialect()->getNamespace().str();
+      bool isDialectInList = dialectsToConsider.size()>=0 ? false : true ;
+      for(auto &str: dialectsToConsider){
+        if(str==dialect)
+          isDialectInList =true;
+      }
+      auto opStr = op->getName().getStringRef().str();
+      bool isOpInList = opsToConsider.size()>=0 ? false : true ;
+      for(auto &str : opsToConsider){
+        if(str == opStr)
+          isOpInList = true;
+      }
+      return ! ((isOpInList || isDialectInList) && isElementwiseMappableOpOnRankedTensors(op));
+      */
